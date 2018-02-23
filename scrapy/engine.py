@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from scrapy.downloader import Downloader
 from scrapy.url_parser import URLParse
+from scrapy.content_parser import ContentParse
 
 
 class Engine:
@@ -29,15 +30,16 @@ class Engine:
             if len(self.page) <= 0 and len(self.pageMain) <= 0:
                 self.stop()
             self.__download_url(self.__get_url_main())                      # 获取url
-            #self.__download_passage(self)
-            pass
-        pass
+            self.__download_passage(self.__get_url_page())
 
-    def __download_passage(self, url):
+    @staticmethod
+    def __download_passage(url):
         if url is None:
             return
         # 解析出文章,递归调用
-        pass
+        cont = ContentParse(url)
+        url, title, content = cont.run()
+        print title + '(' + url + ')' + '\n' + '\t' + content
 
     def __download_url(self, url):
         if url is None:
@@ -47,7 +49,9 @@ class Engine:
         if 'error' != html:
             purl = URLParse(self.baseUrl, html)
             page, pm, other = purl.run()
-            # 检查是否重复#####################################
+            self._check_url(page)
+            self._check_url(pm)
+            self._check_url(other)
             self.__insert_set(page, self.page)
             self.__insert_set(pm, self.pageMain)
             self.__insert_set(other, self.other)
@@ -55,6 +59,23 @@ class Engine:
         else:
             self.failure.add(url)
         return None
+
+    def _check_url(self, urls):
+        ls = []
+        for i in urls:
+            if not self._url_filter(i):
+                ls.append(i)
+        for i in ls:
+                urls.remove(i)
+        return None
+
+    def _url_filter(self, url):
+        if url not in self.success \
+                and url not in self.failure \
+                and url not in self.pageMain \
+                and url not in self.page\
+                and url not in self.other:
+            return True
 
     @staticmethod
     def __insert_set(lis, mse):

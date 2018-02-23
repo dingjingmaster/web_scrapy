@@ -20,10 +20,10 @@ class ContentParse:
         del self.content
 
     def run(self):
-        self._parse_passage(self.url, True)
-        return self.content
+        self._parse_passage(self.url)
+        return self.url, self.title, self.content
 
-    def _parse_passage(self, url, first):
+    def _parse_passage(self, url):
         if self.canStop:
             return
         down = Downloader(url)
@@ -33,7 +33,7 @@ class ContentParse:
         self._parse_content(info('div').filter('.reads'))
         nextUrl = self._parse_next_page(info('div').filter('.page'))
         if nextUrl is not None:
-            self._parse_passage(nextUrl, False)
+            self._parse_passage(nextUrl)
         else:
             self.canStop = True
 
@@ -68,8 +68,10 @@ class ContentParse:
         return None
 
 
+'''
 if __name__ == '__main__':
     cont = ContentParse("http://www.cnys.com/zixun/77211.html")
     cont.run()
     cont._print_content()
+'''
 

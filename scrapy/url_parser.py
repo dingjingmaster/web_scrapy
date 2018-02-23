@@ -35,6 +35,8 @@ class URLParse:
 
     def _norm_url(self, url):
         url1 = ""
+        if url is None:
+            return None
         pos = url.find(self.baseUrl)
         if -1 != pos:
             url1 = url[pos:]
