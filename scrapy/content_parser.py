@@ -67,7 +67,7 @@ class ContentParse:
         return None
 
     def _print_content(self):
-        print self.content
+        print (self.content)
         return None
 
 

@@ -42,7 +42,7 @@ class Engine:
         cont = ContentParse(self.baseUrl, url)
         url1, title, content = cont.run()
         if title != "" and content != "":
-            save(str(self.saveFile) + "/" + str(self.seriesNumber) + '-' + title + '.txt', title + '\n' + url1 + '\n\n' + content)
+            save(str(self.saveFile) + str(self.seriesNumber) + '-' + title + '.txt', title + '\n' + url1 + '\n\n' + content)
             self.seriesNumber += 1
 
     def __download_url(self, url):

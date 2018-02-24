@@ -45,11 +45,11 @@ class URLParse:
 
     def _print_url(self):
         for i in self.pageUrls:
-            print '文章url: ' + i
+            print ('文章url: ' + i)
         for i in self.pageMain:
-            print '主页url: ' + i
+            print ('主页url: ' + i)
         for i in self.otherUrl:
-            print '其它网站url:' + i
+            print ('其它网站url:' + i)
         return None
 
 
