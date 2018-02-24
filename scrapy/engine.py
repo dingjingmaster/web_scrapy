@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 from scrapy.downloader import Downloader
 from scrapy.url_parser import URLParse
+from scrapy.utils.url import *
 from scrapy.content_parser import ContentParse
+from scrapy.save_file import save
 
 
 class Engine:
-    def __init__(self, url, method="get", para=None):
+    def __init__(self, url, method="get", para=None,save="./"):
         self.success = set()
         self.failure = set()
 
@@ -14,7 +16,9 @@ class Engine:
         self.other = set()
         self.pageMain = set()
 
-        self.baseUrl = url
+        self.seriesNumber = 0
+        self.saveFile = save
+        self.baseUrl = self._norm_base_url(url)
         self.__add_url_main(self.baseUrl)
         self.method = method
         self.para = para
@@ -32,14 +36,14 @@ class Engine:
             self.__download_url(self.__get_url_main())                      # 获取url
             self.__download_passage(self.__get_url_page())
 
-    @staticmethod
-    def __download_passage(url):
+    def __download_passage(self, url):
         if url is None:
             return
-        # 解析出文章,递归调用
-        cont = ContentParse(url)
-        url, title, content = cont.run()
-        print title + '(' + url + ')' + '\n' + '\t' + content
+        cont = ContentParse(self.baseUrl, url)
+        url1, title, content = cont.run()
+        if title != "" and content != "":
+            save(str(self.seriesNumber) + '-' + title + '.txt', title + '\n' + url1 + '\n\n' + content)
+            self.seriesNumber += 1
 
     def __download_url(self, url):
         if url is None:
@@ -60,9 +64,18 @@ class Engine:
             self.failure.add(url)
         return None
 
+    @staticmethod
+    def _norm_base_url(burl):
+        burl = burl.replace('http://', '')
+        burl = burl.replace('https://', '')
+        if burl.endswith('/'):
+            burl = burl[:-1]
+        return burl
+
     def _check_url(self, urls):
         ls = []
         for i in urls:
+            i = revise_url(self.baseUrl, i)
             if not self._url_filter(i):
                 ls.append(i)
         for i in ls:

@@ -11,7 +11,13 @@ def norm_url(burl):
         burl = burl[1:]
     return burl
 
-#def is_url(burl):
+
+def revise_url(baseUrl, url):
+    if (url is None) or (url.find('javascript') >= 0):
+        return None
+    if url.find(baseUrl) < 0:
+        url = baseUrl + '/' + url
+    return url
 
 
 

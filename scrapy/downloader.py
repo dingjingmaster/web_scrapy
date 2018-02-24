@@ -2,8 +2,6 @@
 # -*- coding = "utf-8" -*-
 import requests
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
 
 
 class Downloader:
@@ -18,19 +16,29 @@ class Downloader:
         else:
             return
 
-    @staticmethod
-    def __norm_url(url):
+    def __norm_url(self, url):
         url = url.replace('http://', '')
         url = url.replace('https://', '')
-        if url.endswith('/'):
+        while url.endswith('/'):
             url = url[:-1]
+        while not self.__is_alpha(url[0]):
+            url = url[1:]
         return url
 
+    @staticmethod
+    def __is_alpha(char):
+        ascii = ord(char)
+        if ((ascii >= 48) and (ascii <= 57)) or ((ascii >= 65) and (ascii <= 90)) or ((ascii >= 97) and (ascii <= 122)):
+            return True
+        return False
+
     def run(self):
-        if self.method == "GET":
-            self.response = requests.get('http://' + self.url)
-        if self.response is not None and 200 == int(self.response.status_code):
-            return self.response.content
+        try:
+            if self.method == "GET":
+                self.response = requests.get('http://' + self.url)
+        finally:
+            if self.response is not None and 200 == int(self.response.status_code):
+                return self.response.content
         return 'error'
 
     def __del__(self):
